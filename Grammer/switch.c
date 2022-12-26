@@ -3,14 +3,16 @@
 int main(void) {
 	int a = 1;
 
-	if (a == 1) {
-		printf("apple");
+	//a값이 정수로 딱 하나만 떨어지는 경우, switch를 쓴다
+	switch (a)
+	{
+	case 1:
+		printf("apple"); break;
+	case 2:
+		printf("banana"); break;
+	default :
+		printf("mango"); break;
 	}
-	else if ( a == 2) {
-		printf("banana");
-	}
-	else {
-		printf("mango");
-	}
+	
 	return 0;
 }
