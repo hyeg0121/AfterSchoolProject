@@ -13,11 +13,15 @@ int main(void) {
 	player.setFillColor(Color::Red);
 	int player_speed = 5; //플레이어의 움직임 속도
 
-	RectangleShape enemy;
-	enemy.setSize(Vector2f(70, 70));
-	enemy.setPosition(500, 300);
-	enemy.setFillColor(Color::Yellow);
-	
+	RectangleShape enemy[5];
+	int enemy_life[5];
+	for (int i = 0; i < 5; i++) {
+		enemy[i].setSize(Vector2f(70, 70));
+		enemy[i].setPosition(500, 100*i);
+		enemy[i].setFillColor(Color::Yellow);
+		enemy_life[i] = 1;
+	}
+
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
 	{
 		Event event;
@@ -49,9 +53,27 @@ int main(void) {
 			player.move(0, player_speed);
 		}
 
-		window.clear();
+		//적과 충돌
+		for (int i = 0; i < 5; i++) {
+			if (enemy_life[i] > 0) {
+
+				if (player.getGlobalBounds().intersects(enemy[i].getGlobalBounds())) {
+					printf("enemy[%d]와 충돌\n", i);
+					enemy_life[i] -= 1;
+				}
+			}
+		}
+
+		window.clear(Color::Black);
+
+		for (int i = 0; i < 5; i++)
+		{
+			if (enemy_life[i] > 0) {
+				window.draw(enemy[i]);
+			}
+		}
+
 		window.draw(player);
-		window.draw(enemy);
 		window.display();
 		
 	}//while
