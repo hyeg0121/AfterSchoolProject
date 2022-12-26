@@ -9,6 +9,7 @@ int main(void) {
 	RectangleShape player;
 	player.setSize(Vector2f(40, 40));
 	player.setPosition(100, 100);
+	player.setFillColor(Color::Red);
 	
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
 	{
