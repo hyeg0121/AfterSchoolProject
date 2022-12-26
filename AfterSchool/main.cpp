@@ -9,13 +9,21 @@ int main(void) {
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
 	{
 		Event event;
+
 		while (window.pollEvent(event)) {
 
-			if (event.type == Event::Closed) {
-				window.close();
-			}//x버튼을 누르면 윈도우 창 종료
-		}
-	}
+			switch (event.type) {
+
+			//x버튼을 누르면 윈도우 창 종료
+			case Event::Closed:
+				window.close(); //윈도우를 닫음
+				break;
+
+			}
+
+		}//while
+
+	}//while
 
 	return 0;
 }
