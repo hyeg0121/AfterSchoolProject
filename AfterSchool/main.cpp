@@ -6,6 +6,10 @@ int main(void) {
 
 	RenderWindow window(VideoMode(640, 480), "AfterSchool"); // 윈도우 창 생성
 
+	RectangleShape player;
+	player.setSize(Vector2f(40, 40));
+	player.setPosition(100, 100);
+	
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
 	{
 		Event event;
@@ -23,6 +27,8 @@ int main(void) {
 
 		}//while
 
+		window.draw(player);
+		window.display();
 	}//while
 
 	return 0;
