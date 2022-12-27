@@ -33,6 +33,7 @@ int main(void) {
 
 	long start_time = clock(); //게임 시작 시간
 	long spent_time;//게임 진행 시간
+	int is_gameover = 0;
 
 	Font font; 
 	font.loadFromFile("C:\\windows\\Fonts\\arial.ttf");
@@ -48,6 +49,11 @@ int main(void) {
 	bg_texture.loadFromFile("./resources/images/background.jpg");
 	Sprite bg_sprite;
 	bg_sprite.setTexture(bg_texture);
+
+	Texture gameover_texture;
+	gameover_texture.loadFromFile("./resources/images/gameover.jpg");
+	Sprite gameover_sprite;
+	gameover_sprite.setTexture(gameover_texture);
 	bg_sprite.setPosition(0, 0);
 
 	//Player
@@ -160,6 +166,12 @@ int main(void) {
 			}
 		}
 
+		if (player.life <= 0)
+		{
+			is_gameover = 1;
+		}
+
+
 		sprintf_s(player_str, "score : %d  time : %d  life : %d\n",
 			player.score, spent_time/1000,player.life);
 		text.setString(player_str);
@@ -168,6 +180,9 @@ int main(void) {
 		window.draw(player.sprite);
 		window.draw(text);
 
+		if (is_gameover) {
+			window.draw(gameover_sprite);
+		}
 		window.display();
 		
 	}//while
