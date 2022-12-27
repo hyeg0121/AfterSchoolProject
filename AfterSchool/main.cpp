@@ -14,8 +14,16 @@ struct Player {
 };
 
 struct Enemy {
+	RectangleShape sprite;
+	const int NUM = 10;
+	int life;
+	int speed;
+	int score;
+	SoundBuffer explosion_buffer;
+	Sound explosion_sound;
 
 };
+
 int main(void) {
 
 	RenderWindow window(VideoMode(640, 480), "AfterSchool"); // 윈도우 창 생성
@@ -52,20 +60,17 @@ int main(void) {
 
 	//enemy
 	const int ENEMY_NUM = 10;
-	RectangleShape enemy[ENEMY_NUM];
-	int enemy_life[ENEMY_NUM];
-	int enemy_score = 100; //enemy를 잡았을 때 점수
-	SoundBuffer enemy_explosion_buffer;
-	enemy_explosion_buffer.loadFromFile("./resources/sounds/rumble.flac");
-	Sound enemy_explosion_sound;
-	enemy_explosion_sound.setBuffer(enemy_explosion_buffer);
-	int enemy_speed[ENEMY_NUM];
+	Enemy enemy[ENEMY_NUM];
+
 	for (int i = 0; i < ENEMY_NUM; i++) {
-		enemy[i].setSize(Vector2f(70, 70));
-		enemy[i].setPosition(rand()%300+300, rand()%385);
-		enemy[i].setFillColor(Color::Yellow);
-		enemy_life[i] = 1;
-		enemy_speed[i] = -(rand() % 10 * 1); 
+		enemy[i].explosion_buffer.loadFromFile("./resources/sounds/rumble.flac");
+		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
+		enemy[i].score = 100;
+		enemy[i].sprite.setSize(Vector2f(70, 70));
+		enemy[i].sprite.setPosition(rand()%300+300, rand()%385);
+		enemy[i].sprite.setFillColor(Color::Yellow);
+		enemy[i].life = 1;
+		enemy[i].speed = -(rand() % 10 * 1);
 	}
 
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
@@ -86,12 +91,12 @@ int main(void) {
 			{
 				if (event.key.code == Keyboard::Space) {
 					for (int i = 0; i < ENEMY_NUM; i++) {
-						enemy[i].setSize(Vector2f(70, 70));
-						enemy[i].setPosition(rand() % 300 + 300, rand() % 385);
-						enemy[i].setFillColor(Color::Yellow);
-						enemy_life[i] = 1;
-						enemy_speed[i] = -(rand() % 10 + 1);
-						window.draw(enemy[i]);
+						enemy[i].sprite.setSize(Vector2f(70, 70));
+						enemy[i].sprite.setPosition(rand() % 300 + 300, rand() % 385);
+						enemy[i].sprite.setFillColor(Color::Yellow);
+						enemy[i].life = 1;
+						enemy[i].speed = -(rand() % 10 + 1);
+						window.draw(enemy[i].sprite);
 					}
 				}
 			}///case
@@ -118,20 +123,20 @@ int main(void) {
 
 		//적과 충돌
 		for (int i = 0; i < ENEMY_NUM; i++) {
-			if (enemy_life[i] > 0) {
+			if (enemy[i].life > 0) {
 
-				if (player.sprite.getGlobalBounds().intersects(enemy[i].getGlobalBounds())) {
+				if (player.sprite.getGlobalBounds().intersects(enemy[i].sprite.getGlobalBounds())) {
 					printf("enemy[%d]와 충돌\n", i);
-					enemy_life[i] -= 1;
-					player.score += enemy_score;
+					enemy[i].life -= 1;
+					player.score += enemy[i].score;
 					
-					if(enemy_life[i] == 0) {
-						enemy_explosion_sound.play();
+					if(enemy[i].life == 0) {
+						enemy[i].explosion_sound.play();
 					}
 
 				}//if
 
-				enemy[i].move(enemy_speed[i], 0);
+				enemy[i].sprite.move(enemy[i].speed, 0);
 			}//if
 			
 		}
@@ -141,8 +146,8 @@ int main(void) {
 
 		for (int i = 0; i < ENEMY_NUM; i++) //enemy가 살아있을때만 draw
 		{
-			if (enemy_life[i] > 0) {
-				window.draw(enemy[i]);
+			if (enemy[i].life > 0) {
+				window.draw(enemy[i].sprite);
 			}
 		}
 
