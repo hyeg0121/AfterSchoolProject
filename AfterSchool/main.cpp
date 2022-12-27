@@ -40,6 +40,20 @@ int main(void) {
 				window.close(); //윈도우를 닫음
 				break;
 
+			//스페이스를 누르면 모든 enemy 초기화 
+			case Event::KeyPressed:
+			{
+				if (event.key.code == Keyboard::Space) {
+					for (int i = 0; i < 5; i++) {
+						enemy[i].setSize(Vector2f(70, 70));
+						enemy[i].setPosition(rand() % 300 + 300, rand() % 385);
+						enemy[i].setFillColor(Color::Yellow);
+						enemy_life[i] = 1;
+						window.draw(enemy[i]);
+					}
+				}
+			}
+
 			}
 
 		}//while
@@ -56,7 +70,7 @@ int main(void) {
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Down)) {
 			player.move(0, player_speed);
-		}
+		}//방향키 end
 
 		//적과 충돌
 		for (int i = 0; i < 5; i++) {
