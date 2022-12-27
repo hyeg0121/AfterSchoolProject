@@ -20,7 +20,7 @@ int main(void) {
 	text.setCharacterSize(50);
 	text.setFillColor(Color(255, 255, 255));
 	text.setPosition(0, 0);
-	text.setString("score");
+	text.setString("score : ");
 
 	RectangleShape player;
 	player.setSize(Vector2f(40, 40));
@@ -28,8 +28,8 @@ int main(void) {
 	player.setFillColor(Color::Red);
 	int player_speed = 5; //플레이어의 움직임 속도
 	int player_score = 0; //플레이어의 점수
-
-
+	char player_str[50];
+	
 	RectangleShape enemy[5];
 	int enemy_life[5];
 	int enemy_score = 100; //enemy를 잡았을 때 점수
@@ -107,6 +107,9 @@ int main(void) {
 				window.draw(enemy[i]);
 			}
 		}
+
+		sprintf_s(player_str, "score : %d", player_score);
+		text.setString(player_str);
 
 		//draw
 		window.draw(player);
