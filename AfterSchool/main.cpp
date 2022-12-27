@@ -39,21 +39,23 @@ int main(void) {
 	int player_speed = 5; //플레이어의 움직임 속도
 	int player_score = 0; //플레이어의 점수
 	char player_str[50];
-	//Texture player_texture;
-	//player_texture.loadFromFile(".resources/images/player.jpg");
-	
-	RectangleShape enemy[5];
-	int enemy_life[5];
+
+	//enemy
+	const int ENEMY_NUM = 10;
+	RectangleShape enemy[ENEMY_NUM];
+	int enemy_life[ENEMY_NUM];
 	int enemy_score = 100; //enemy를 잡았을 때 점수
 	SoundBuffer enemy_explosion_buffer;
 	enemy_explosion_buffer.loadFromFile("./resources/sounds/rumble.flac");
 	Sound enemy_explosion_sound;
 	enemy_explosion_sound.setBuffer(enemy_explosion_buffer);
-	for (int i = 0; i < 5; i++) {
+	int enemy_speed[ENEMY_NUM];
+	for (int i = 0; i < ENEMY_NUM; i++) {
 		enemy[i].setSize(Vector2f(70, 70));
 		enemy[i].setPosition(rand()%300+300, rand()%385);
 		enemy[i].setFillColor(Color::Yellow);
 		enemy_life[i] = 1;
+		enemy_speed[i] = -(rand() % 10 * 1); 
 	}
 
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
@@ -73,11 +75,12 @@ int main(void) {
 			case Event::KeyPressed:
 			{
 				if (event.key.code == Keyboard::Space) {
-					for (int i = 0; i < 5; i++) {
+					for (int i = 0; i < ENEMY_NUM; i++) {
 						enemy[i].setSize(Vector2f(70, 70));
 						enemy[i].setPosition(rand() % 300 + 300, rand() % 385);
 						enemy[i].setFillColor(Color::Yellow);
 						enemy_life[i] = 1;
+						enemy_speed[i] = -(rand() % 10 + 1);
 						window.draw(enemy[i]);
 					}
 				}
@@ -104,7 +107,7 @@ int main(void) {
 		}//방향키 end
 
 		//적과 충돌
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < ENEMY_NUM; i++) {
 			if (enemy_life[i] > 0) {
 
 				if (player.getGlobalBounds().intersects(enemy[i].getGlobalBounds())) {
@@ -118,6 +121,7 @@ int main(void) {
 
 				}//if
 
+				enemy[i].move(enemy_speed[i], 0);
 			}//if
 			
 		}
@@ -125,7 +129,7 @@ int main(void) {
 		window.clear(Color::Black);
 		window.draw(bg_sprite);
 
-		for (int i = 0; i < 5; i++) //enemy가 살아있을때만 draw
+		for (int i = 0; i < ENEMY_NUM; i++) //enemy가 살아있을때만 draw
 		{
 			if (enemy_life[i] > 0) {
 				window.draw(enemy[i]);
