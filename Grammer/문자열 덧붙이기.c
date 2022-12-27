@@ -9,12 +9,10 @@ int main(void)
 	char str1[30] = "score : ";
 	int score = 300;
 
-	char str2[30];
-	itoa(score, str2, 10);
+	char str[30];
+	sprintf(str, "score : %d ", score);
 
-	strcat(str1, str2);
-
-	printf("%s", str1);
+	printf("%s", str);
 
 	return 0;
 }
