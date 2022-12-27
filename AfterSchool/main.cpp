@@ -26,6 +26,12 @@ int main(void) {
 	text.setPosition(0, 0);
 	text.setString("score : ");
 
+	Texture bg_texture;
+	bg_texture.loadFromFile("./resources/images/background.jpg");
+	Sprite bg_sprite;
+	bg_sprite.setTexture(bg_texture);
+	bg_sprite.setPosition(0, 0);
+
 	RectangleShape player;
 	player.setSize(Vector2f(40, 40));
 	player.setPosition(100, 100);
@@ -33,6 +39,8 @@ int main(void) {
 	int player_speed = 5; //플레이어의 움직임 속도
 	int player_score = 0; //플레이어의 점수
 	char player_str[50];
+	//Texture player_texture;
+	//player_texture.loadFromFile(".resources/images/player.jpg");
 	
 	RectangleShape enemy[5];
 	int enemy_life[5];
@@ -115,6 +123,7 @@ int main(void) {
 		}
 
 		window.clear(Color::Black);
+		window.draw(bg_sprite);
 
 		for (int i = 0; i < 5; i++) //enemy가 살아있을때만 draw
 		{
