@@ -6,6 +6,16 @@
 
 using namespace sf;
 
+struct Player {
+	RectangleShape sprite; //그림이 되는 부분
+	int speed;
+	int score;
+
+};
+
+struct Enemy {
+
+};
 int main(void) {
 
 	RenderWindow window(VideoMode(640, 480), "AfterSchool"); // 윈도우 창 생성
@@ -32,12 +42,12 @@ int main(void) {
 	bg_sprite.setTexture(bg_texture);
 	bg_sprite.setPosition(0, 0);
 
-	RectangleShape player;
-	player.setSize(Vector2f(40, 40));
-	player.setPosition(100, 100);
-	player.setFillColor(Color::Red);
-	int player_speed = 5; //플레이어의 움직임 속도
-	int player_score = 0; //플레이어의 점수
+	struct Player player;
+	player.sprite.setSize(Vector2f(40, 40));
+	player.sprite.setPosition(100, 100);
+	player.sprite.setFillColor(Color::Red);
+	player.speed = 5; //플레이어의 움직임 속도
+	player.score = 0; //플레이어의 점수
 	char player_str[50];
 
 	//enemy
@@ -94,26 +104,26 @@ int main(void) {
 
 		//방향키를 눌렀을 때 플레이어 움직임
 		if (Keyboard::isKeyPressed(Keyboard::Left)) {
-			player.move(-player_speed, 0);
+			player.sprite.move(-player.speed, 0);
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Up)) {
-			player.move(0, -player_speed);
+			player.sprite.move(0, -player.speed);
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Right)) {
-			player.move(player_speed, 0);
+			player.sprite.move(player.speed, 0);
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Down)) {
-			player.move(0, player_speed);
+			player.sprite.move(0, player.speed);
 		}//방향키 end
 
 		//적과 충돌
 		for (int i = 0; i < ENEMY_NUM; i++) {
 			if (enemy_life[i] > 0) {
 
-				if (player.getGlobalBounds().intersects(enemy[i].getGlobalBounds())) {
+				if (player.sprite.getGlobalBounds().intersects(enemy[i].getGlobalBounds())) {
 					printf("enemy[%d]와 충돌\n", i);
 					enemy_life[i] -= 1;
-					player_score += enemy_score;
+					player.score += enemy_score;
 					
 					if(enemy_life[i] == 0) {
 						enemy_explosion_sound.play();
@@ -137,11 +147,11 @@ int main(void) {
 		}
 
 		sprintf_s(player_str, "score : %d  time : %d\n",
-			player_score, spent_time/1000);
+			player.score, spent_time/1000);
 		text.setString(player_str);
 
 		//draw
-		window.draw(player);
+		window.draw(player.sprite);
 		window.draw(text);
 
 		window.display();
