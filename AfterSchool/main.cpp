@@ -10,7 +10,7 @@ struct Player {
 	RectangleShape sprite; //그림이 되는 부분
 	int speed;
 	int score;
-
+	int life;
 };
 
 struct Enemy {
@@ -42,7 +42,7 @@ int main(void) {
 	text.setCharacterSize(30);
 	text.setFillColor(Color(255, 255, 255));
 	text.setPosition(0, 0);
-	text.setString("score : ");
+	text.setString("score : time : life :");
 
 	Texture bg_texture;
 	bg_texture.loadFromFile("./resources/images/background.jpg");
@@ -50,15 +50,17 @@ int main(void) {
 	bg_sprite.setTexture(bg_texture);
 	bg_sprite.setPosition(0, 0);
 
+	//Player
 	struct Player player;
 	player.sprite.setSize(Vector2f(40, 40));
 	player.sprite.setPosition(100, 100);
 	player.sprite.setFillColor(Color::Red);
 	player.speed = 5; //플레이어의 움직임 속도
 	player.score = 0; //플레이어의 점수
+	player.life = 3;
 	char player_str[50];
 
-	//enemy
+	//Enemy
 	const int ENEMY_NUM = 10;
 	Enemy enemy[ENEMY_NUM];
 
@@ -121,11 +123,12 @@ int main(void) {
 			player.sprite.move(0, player.speed);
 		}//방향키 end
 
-		//적과 충돌
+		//enemy와 충돌
 		for (int i = 0; i < ENEMY_NUM; i++) {
 			if (enemy[i].life > 0) {
 
-				if (player.sprite.getGlobalBounds().intersects(enemy[i].sprite.getGlobalBounds())) {
+				if (player.sprite.getGlobalBounds().intersects(enemy[i].sprite.getGlobalBounds())) 
+				{
 					printf("enemy[%d]와 충돌\n", i);
 					enemy[i].life -= 1;
 					player.score += enemy[i].score;
@@ -135,6 +138,12 @@ int main(void) {
 					}
 
 				}//if
+				//적이 왼쪽 끝에 진입하려는 순간
+				else if (enemy[i].sprite.getPosition().x < 0) 
+				{ 
+					player.life -= 1;
+					enemy[i].life = 0;
+				}//else if
 
 				enemy[i].sprite.move(enemy[i].speed, 0);
 			}//if
@@ -151,8 +160,8 @@ int main(void) {
 			}
 		}
 
-		sprintf_s(player_str, "score : %d  time : %d\n",
-			player.score, spent_time/1000);
+		sprintf_s(player_str, "score : %d  time : %d  life : %d\n",
+			player.score, spent_time/1000,player.life);
 		text.setString(player_str);
 
 		//draw
