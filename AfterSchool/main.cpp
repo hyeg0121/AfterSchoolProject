@@ -13,6 +13,7 @@ struct Player {
 	int speed;
 	int score;
 	int life;
+	float x, y; //플레이어 좌표
 };
 
 struct Enemy {
@@ -29,10 +30,19 @@ struct Enemy {
 
 };
 
+struct Bullet {
+	RectangleShape sprite;
+	Texture texture;
+	Texture * texture_pointer;
+	int speed;
+	int is_fired;
+
+};
+
 //전역변수
 const int ENEMY_NUM = 10;					//enemy의 최대 개수
 const int W_WIDTH = 1200, W_HEIGHT = 480;	//창의 크기
-const int GO_WIDTH = 480, GO_HEIGHT = 360;	//gameover 그림의 크기 
+const int GO_WIDTH = 640, GO_HEIGHT = 480;	//gameover 그림의 크기 
 
 int main(void) {
 
@@ -82,6 +92,8 @@ int main(void) {
 	struct Player player;
 	player.sprite.setSize(Vector2f(70, 70));
 	player.sprite.setPosition(100, 100);
+	player.x = player.sprite.getPosition().x;
+	player.y = player.sprite.getPosition().y;
 	player.texture.loadFromFile("./resources/images/player.png");
 	player.texture_pointer = &player.texture;
 	player.sprite.setTexture(player.texture_pointer);
@@ -109,6 +121,17 @@ int main(void) {
 		enemy[i].sprite.setTexture(enemy[i].texture_pointer);
 	}
 
+	//총알
+	Bullet bullet;
+	bullet.sprite.setSize(Vector2f(20, 20));
+	bullet.sprite.setPosition(player.x + 70, player.y + 30); //임시 테스트
+	bullet.speed = 20;
+	bullet.is_fired = 0;
+	bullet.texture.loadFromFile("./resources/images/bullet.png");
+	bullet.texture_pointer = &bullet.texture;
+	bullet.sprite.setTexture(bullet.texture_pointer);
+
+	//프로그램 실행 중
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
 	{
 		Event event;
@@ -212,14 +235,16 @@ int main(void) {
 		sprintf_s(player_str, "score : %d  time : %d  life : %d\n",
 			player.score, spent_time/1000,player.life);
 		text.setString(player_str);
+		//총알 위치 바꿈
 
 		//draw
+		window.draw(bullet.sprite);
 		window.draw(player.sprite);
 		window.draw(text);
 
 		if (is_gameover) {
 			window.draw(gameover_sprite);
-			
+			// TODO : 게임이 멈추는 것을 구현할 것
 		}
 		window.display();
 		
