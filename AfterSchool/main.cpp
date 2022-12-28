@@ -39,6 +39,17 @@ struct Bullet {
 
 };
 
+//함수
+//obj1과 obj2의 충돌 여부, 충돌하면 1을 반환, 충돌하지 않으면 0을 반환 
+int is_collide(RectangleShape obj1, RectangleShape obj2) {
+	if (obj1.getGlobalBounds().intersects(obj2.getGlobalBounds())) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+};
+
 //전역변수
 const int ENEMY_NUM = 10;					//enemy의 최대 개수
 const int W_WIDTH = 1200, W_HEIGHT = 480;	//창의 크기
@@ -148,27 +159,20 @@ int main(void) {
 			//총알이 발사됨 
 			case Event::KeyPressed:
 			{
-				if (event.key.code == Keyboard::Space) {
+				/*if (event.key.code == Keyboard::Space) {
 					if (!(bullet.is_fired)) {
 						player.x = player.sprite.getPosition().x;
 						player.y = player.sprite.getPosition().y;
 						bullet.sprite.setPosition(player.x + 70, player.y + 30);
 						bullet.is_fired = 1;
 					}
-				}
+				}*/
 			}///case
 
 			}//switch
 
 		}//while
 
-		//총알 움직임
-		bullet.sprite.move(bullet.speed, 0);
-		//총알 발사 도중 다시 발사 못하게
-		if (bullet.sprite.getPosition().x >= 1200) {
-			bullet.is_fired = 0;
-		}
-		
 		//시간 구하기
 		spent_time = clock() - start_time;
 
@@ -186,7 +190,25 @@ int main(void) {
 			player.sprite.move(0, player.speed);
 		}//방향키 end
 
-		//enemy와 충돌
+		//Space를 눌렀을 때 총알 발사
+		if (event.key.code == Keyboard::Space) {
+			if (!(bullet.is_fired)) {
+				player.x = player.sprite.getPosition().x;
+				player.y = player.sprite.getPosition().y;
+				bullet.sprite.setPosition(player.x + 70, player.y + 30);
+				bullet.is_fired = 1;
+			}
+		}
+
+		//총알 움직임
+		bullet.sprite.move(bullet.speed, 0);
+
+		//bullet이 화면 끝에 도달하면 다시 발사 가능
+		if (bullet.sprite.getPosition().x >= W_WIDTH) {
+			bullet.is_fired = 0;
+		}
+
+		//enemy
 		for (int i = 0; i < ENEMY_NUM; i++) {
 
 			//10초마다 enemy가 젠
@@ -198,13 +220,16 @@ int main(void) {
 				window.draw(enemy[i].sprite);
 			}
 
+			//bullet과 enemy, player와 enemy가 충돌
 			if (enemy[i].life > 0) {
-
-				if (bullet.sprite.getGlobalBounds().intersects(enemy[i].sprite.getGlobalBounds())) 
+				// TODO : 총알이 관통하는 버그 수정
+				if (is_collide(player.sprite, enemy[i].sprite)
+					|| is_collide(bullet.sprite, enemy[i].sprite))
 				{
 					printf("enemy[%d]와 충돌\n", i);
 					enemy[i].life -= 1;
 					player.score += enemy[i].score;
+					bullet.is_fired = 0;
 					
 					if(enemy[i].life == 0) {
 						enemy[i].explosion_sound.play();
