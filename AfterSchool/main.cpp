@@ -26,7 +26,7 @@ struct Enemy {
 
 //전역변수
 const int ENEMY_NUM = 10;					//enemy의 최대 개수
-const int W_WIDTH = 640, W_HEIGHT = 480;	//창의 크기
+const int W_WIDTH = 1200, W_HEIGHT = 480;	//창의 크기
 const int GO_WIDTH = 320, GO_HEIGHT = 240;	//gameover 그림의 크기 
 
 
@@ -57,8 +57,9 @@ int main(void) {
 	bg_sprite.setTexture(bg_texture);
 	bg_sprite.setPosition(0, 0);
 
+	//gameover
 	Texture gameover_texture;
-	gameover_texture.loadFromFile("./resources/images/gameover.jpg");
+	gameover_texture.loadFromFile("./resources/images/gameover.png");
 	Sprite gameover_sprite;
 	gameover_sprite.setTexture(gameover_texture);
 	gameover_sprite.setPosition((W_WIDTH-GO_WIDTH)/2, (W_HEIGHT-GO_HEIGHT)/2);
@@ -81,7 +82,7 @@ int main(void) {
 		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
 		enemy[i].score = 100;
 		enemy[i].sprite.setSize(Vector2f(70, 70));
-		enemy[i].sprite.setPosition(rand()%300+300, rand()%385);
+		enemy[i].sprite.setPosition(rand()%300+W_WIDTH*0.9, rand()%385);
 		enemy[i].sprite.setFillColor(Color::Yellow);
 		enemy[i].life = 1;
 		enemy[i].speed = -(rand() % 10 * 1);
@@ -106,7 +107,7 @@ int main(void) {
 				if (event.key.code == Keyboard::Space) {
 					for (int i = 0; i < ENEMY_NUM; i++) {
 						enemy[i].sprite.setSize(Vector2f(70, 70));
-						enemy[i].sprite.setPosition(rand() % 300 + 300, rand() % 385);
+						enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH*0.9, rand() % 385);
 						enemy[i].sprite.setFillColor(Color::Yellow);
 						enemy[i].life = 1;
 						enemy[i].speed = -(rand() % 10 + 1);
@@ -188,6 +189,7 @@ int main(void) {
 
 		if (is_gameover) {
 			window.draw(gameover_sprite);
+			
 		}
 		window.display();
 		
