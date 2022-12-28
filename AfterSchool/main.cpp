@@ -45,7 +45,13 @@ int main(void) {
 	long spent_time;//게임 진행 시간
 	int is_gameover = 0;
 
-	
+	//BGM
+	SoundBuffer BGM_buffer;
+	BGM_buffer.loadFromFile("./resources/sounds/bgm.ogg");
+	Sound BGM_sound;
+	BGM_sound.setBuffer(BGM_buffer);
+	BGM_sound.setLoop(1);
+	BGM_sound.play();
 
 	Font font; 
 	font.loadFromFile("C:\\windows\\Fonts\\comicbd.ttf");
