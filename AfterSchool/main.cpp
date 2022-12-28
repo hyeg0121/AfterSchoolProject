@@ -9,6 +9,7 @@ using namespace sf;
 struct Player {
 	RectangleShape sprite; //그림이 되는 부분
 	Texture texture;
+	Texture* texture_pointer;
 	int speed;
 	int score;
 	int life;
@@ -16,6 +17,8 @@ struct Player {
 
 struct Enemy {
 	RectangleShape sprite;
+	Texture texture;
+	Texture* texture_pointer;
 	const int NUM = 10;
 	int life;
 	int speed;
@@ -29,7 +32,7 @@ struct Enemy {
 //전역변수
 const int ENEMY_NUM = 10;					//enemy의 최대 개수
 const int W_WIDTH = 1200, W_HEIGHT = 480;	//창의 크기
-const int GO_WIDTH = 320, GO_HEIGHT = 240;	//gameover 그림의 크기 
+const int GO_WIDTH = 480, GO_HEIGHT = 360;	//gameover 그림의 크기 
 
 int main(void) {
 
@@ -42,13 +45,17 @@ int main(void) {
 	long spent_time;//게임 진행 시간
 	int is_gameover = 0;
 
+	
+
 	Font font; 
-	font.loadFromFile("C:\\windows\\Fonts\\arial.ttf");
+	font.loadFromFile("C:\\windows\\Fonts\\comicbd.ttf");
 
 	Text text; //score
 	text.setFont(font);
 	text.setCharacterSize(30);
 	text.setFillColor(Color(255, 255, 255));
+	text.setOutlineColor(Color::Black);
+	text.setOutlineThickness(1);
 	text.setPosition(0, 0);
 	text.setString("score : time : life :");
 
@@ -67,12 +74,11 @@ int main(void) {
 
 	//Player
 	struct Player player;
-	player.sprite.setSize(Vector2f(40, 40));
+	player.sprite.setSize(Vector2f(70, 70));
 	player.sprite.setPosition(100, 100);
-	player.sprite.setFillColor(Color::Red);
-	Texture player_texture;
-	player_texture.loadFromFile("./resources/images/player.png");
-	//player.sprite.setTexture();
+	player.texture.loadFromFile("./resources/images/player.png");
+	player.texture_pointer = &player.texture;
+	player.sprite.setTexture(player.texture_pointer);
 	player.speed = 5; //플레이어의 움직임 속도
 	player.score = 0; //플레이어의 점수
 	player.life = 3;
@@ -87,12 +93,14 @@ int main(void) {
 		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
 		enemy[i].score = 100;
 		enemy[i].respawn_time = 10;
+		enemy[i].life = 1;
+		enemy[i].speed = -(rand() % 10 * 1);
 
 		enemy[i].sprite.setSize(Vector2f(70, 70));
 		enemy[i].sprite.setPosition(rand()%300+W_WIDTH*0.9, rand()%385);
-		enemy[i].sprite.setFillColor(Color::Yellow);
-		enemy[i].life = 1;
-		enemy[i].speed = -(rand() % 10 * 1);
+		enemy[i].texture.loadFromFile("./resources/images/enemy.png");
+		enemy[i].texture_pointer = &enemy[i].texture;
+		enemy[i].sprite.setTexture(enemy[i].texture_pointer);
 	}
 
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
@@ -114,8 +122,7 @@ int main(void) {
 				if (event.key.code == Keyboard::Space) {
 					for (int i = 0; i < ENEMY_NUM; i++) {
 						enemy[i].sprite.setSize(Vector2f(70, 70));
-						enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH*0.9, rand() % 385);
-						enemy[i].sprite.setFillColor(Color::Yellow);
+						enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 385);
 						enemy[i].life = 1;
 						enemy[i].speed = -(rand() % 10 + 1);
 						window.draw(enemy[i].sprite);
@@ -150,7 +157,6 @@ int main(void) {
 			if (spent_time % (1000*enemy[i].respawn_time) < 1000 / 60 + 1) {
 				enemy[i].sprite.setSize(Vector2f(70, 70));
 				enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 385);
-				enemy[i].sprite.setFillColor(Color::Yellow);
 				enemy[i].life = 1;
 				enemy[i].speed = -(rand() % 10 + 1 + spent_time%(1000*enemy[i].respawn_time));
 				window.draw(enemy[i].sprite);
