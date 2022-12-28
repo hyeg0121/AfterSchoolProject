@@ -123,7 +123,7 @@ int main(void) {
 
 	//총알
 	Bullet bullet;
-	bullet.sprite.setSize(Vector2f(20, 20));
+	bullet.sprite.setSize(Vector2f(30, 30));
 	bullet.sprite.setPosition(player.x + 70, player.y + 30); //임시 테스트
 	bullet.speed = 20;
 	bullet.is_fired = 0;
@@ -145,16 +145,15 @@ int main(void) {
 				window.close(); //윈도우를 닫음
 				break;
 
-			//스페이스를 누르면 모든 enemy 초기화 
+			//총알이 발사됨 
 			case Event::KeyPressed:
 			{
 				if (event.key.code == Keyboard::Space) {
-					for (int i = 0; i < ENEMY_NUM; i++) {
-						enemy[i].sprite.setSize(Vector2f(70, 70));
-						enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 385);
-						enemy[i].life = 1;
-						enemy[i].speed = -(rand() % 10 + 1);
-						window.draw(enemy[i].sprite);
+					if (!(bullet.is_fired)) {
+						player.x = player.sprite.getPosition().x;
+						player.y = player.sprite.getPosition().y;
+						bullet.sprite.setPosition(player.x + 70, player.y + 30);
+						bullet.is_fired = 1;
 					}
 				}
 			}///case
@@ -162,7 +161,15 @@ int main(void) {
 			}//switch
 
 		}//while
+
+		//총알 움직임
+		bullet.sprite.move(bullet.speed, 0);
+		//총알 발사 도중 다시 발사 못하게
+		if (bullet.sprite.getPosition().x >= 1200) {
+			bullet.is_fired = 0;
+		}
 		
+		//시간 구하기
 		spent_time = clock() - start_time;
 
 		//방향키를 눌렀을 때 플레이어 움직임
@@ -193,7 +200,7 @@ int main(void) {
 
 			if (enemy[i].life > 0) {
 
-				if (player.sprite.getGlobalBounds().intersects(enemy[i].sprite.getGlobalBounds())) 
+				if (bullet.sprite.getGlobalBounds().intersects(enemy[i].sprite.getGlobalBounds())) 
 				{
 					printf("enemy[%d]와 충돌\n", i);
 					enemy[i].life -= 1;
@@ -211,9 +218,10 @@ int main(void) {
 					enemy[i].life = 0;
 				}//else if
 
-				enemy[i].sprite.move(enemy[i].speed, 0);
 			}//if
-			
+
+			//적 움직임
+			enemy[i].sprite.move(enemy[i].speed, 0);		
 		}
 
 		window.clear(Color::Black);
@@ -235,7 +243,6 @@ int main(void) {
 		sprintf_s(player_str, "score : %d  time : %d  life : %d\n",
 			player.score, spent_time/1000,player.life);
 		text.setString(player_str);
-		//총알 위치 바꿈
 
 		//draw
 		window.draw(bullet.sprite);
