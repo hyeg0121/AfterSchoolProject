@@ -24,9 +24,15 @@ struct Enemy {
 
 };
 
+//전역변수
+const int ENEMY_NUM = 10;					//enemy의 최대 개수
+const int W_WIDTH = 640, W_HEIGHT = 480;	//창의 크기
+const int GO_WIDTH = 320, GO_HEIGHT = 240;	//gameover 그림의 크기 
+
+
 int main(void) {
 
-	RenderWindow window(VideoMode(640, 480), "AfterSchool"); // 윈도우 창 생성
+	RenderWindow window(VideoMode(W_WIDTH, W_HEIGHT), "AfterSchool"); // 윈도우 창 생성
 	window.setFramerateLimit(60);
 
 	srand(time(0));
@@ -49,12 +55,13 @@ int main(void) {
 	bg_texture.loadFromFile("./resources/images/background.jpg");
 	Sprite bg_sprite;
 	bg_sprite.setTexture(bg_texture);
+	bg_sprite.setPosition(0, 0);
 
 	Texture gameover_texture;
 	gameover_texture.loadFromFile("./resources/images/gameover.jpg");
 	Sprite gameover_sprite;
 	gameover_sprite.setTexture(gameover_texture);
-	bg_sprite.setPosition(0, 0);
+	gameover_sprite.setPosition((W_WIDTH-GO_WIDTH)/2, (W_HEIGHT-GO_HEIGHT)/2);
 
 	//Player
 	struct Player player;
@@ -67,7 +74,6 @@ int main(void) {
 	char player_str[50];
 
 	//Enemy
-	const int ENEMY_NUM = 10;
 	Enemy enemy[ENEMY_NUM];
 
 	for (int i = 0; i < ENEMY_NUM; i++) {
