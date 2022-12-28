@@ -18,9 +18,9 @@ struct Player {
 
 struct Enemy {
 	RectangleShape sprite;
-	Texture texture;
+	Texture texture[7];
 	Texture* texture_pointer;
-	const int NUM = 10;
+	const int NUM = 7;
 	int life;
 	int speed;
 	int score;
@@ -37,6 +37,14 @@ struct Bullet {
 	int speed;
 	int is_fired;
 
+};
+
+struct Textures {
+	Texture bg;			//배경 이미지
+	Texture gameover;	//게임 종료 이미지
+	Texture player;		//player 이미지
+	Texture* player_pointer;
+	Texture enemy;		//enemy 이미지
 };
 
 //함수
@@ -66,6 +74,14 @@ int main(void) {
 	long spent_time;//게임 진행 시간
 	int is_gameover = 0;
 
+	//Textures
+	struct Textures t;
+	t.bg.loadFromFile("./resources/images/background.jpg");
+	t.gameover.loadFromFile("./resources/images/gameover.png");
+	t.player.loadFromFile("./resources/images/player.png");
+	t.enemy.loadFromFile("./resources/images/enemy.png");
+
+
 	//BGM
 	SoundBuffer BGM_buffer;
 	BGM_buffer.loadFromFile("./resources/sounds/bgm.ogg");
@@ -86,17 +102,13 @@ int main(void) {
 	text.setPosition(0, 0);
 	text.setString("score : time : life :");
 
-	Texture bg_texture;
-	bg_texture.loadFromFile("./resources/images/background.jpg");
 	Sprite bg_sprite;
-	bg_sprite.setTexture(bg_texture);
+	bg_sprite.setTexture(t.bg);
 	bg_sprite.setPosition(0, 0);
 
 	//gameover
-	Texture gameover_texture;
-	gameover_texture.loadFromFile("./resources/images/gameover.png");
 	Sprite gameover_sprite;
-	gameover_sprite.setTexture(gameover_texture);
+	gameover_sprite.setTexture(t.gameover);
 	gameover_sprite.setPosition((W_WIDTH-GO_WIDTH)/2, (W_HEIGHT-GO_HEIGHT)/2);
 
 	//Player
@@ -105,16 +117,15 @@ int main(void) {
 	player.sprite.setPosition(100, 100);
 	player.x = player.sprite.getPosition().x;
 	player.y = player.sprite.getPosition().y;
-	player.texture.loadFromFile("./resources/images/player.png");
-	player.texture_pointer = &player.texture;
-	player.sprite.setTexture(player.texture_pointer);
-	player.speed = 5; //플레이어의 움직임 속도
+	player.sprite.setTexture(&t.player);
+	player.speed = 8; //플레이어의 움직임 속도
 	player.score = 0; //플레이어의 점수
 	player.life = 3;
 	char player_str[50];
 
 	//Enemy
 	struct Enemy enemy[ENEMY_NUM];
+	char filename[100];
 	for (int i = 0; i < ENEMY_NUM; i++) {
 
 		// TODO : 굉장히 비효율적인 코드이무로 나중에 refactoring
@@ -127,9 +138,7 @@ int main(void) {
 
 		enemy[i].sprite.setSize(Vector2f(70, 70));
 		enemy[i].sprite.setPosition(rand()%300+W_WIDTH*0.9, rand()%385);
-		enemy[i].texture.loadFromFile("./resources/images/enemy.png");
-		enemy[i].texture_pointer = &enemy[i].texture;
-		enemy[i].sprite.setTexture(enemy[i].texture_pointer);
+		enemy[i].sprite.setTexture(&t.enemy);
 	}
 
 	//총알
