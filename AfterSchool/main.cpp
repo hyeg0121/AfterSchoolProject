@@ -8,6 +8,7 @@ using namespace sf;
 
 struct Player {
 	RectangleShape sprite; //그림이 되는 부분
+	Texture texture;
 	int speed;
 	int score;
 	int life;
@@ -21,6 +22,7 @@ struct Enemy {
 	int score;
 	SoundBuffer explosion_buffer;
 	Sound explosion_sound;
+	int respawn_time;
 
 };
 
@@ -28,7 +30,6 @@ struct Enemy {
 const int ENEMY_NUM = 10;					//enemy의 최대 개수
 const int W_WIDTH = 1200, W_HEIGHT = 480;	//창의 크기
 const int GO_WIDTH = 320, GO_HEIGHT = 240;	//gameover 그림의 크기 
-
 
 int main(void) {
 
@@ -69,18 +70,24 @@ int main(void) {
 	player.sprite.setSize(Vector2f(40, 40));
 	player.sprite.setPosition(100, 100);
 	player.sprite.setFillColor(Color::Red);
+	Texture player_texture;
+	player_texture.loadFromFile("./resources/images/player.png");
+	//player.sprite.setTexture();
 	player.speed = 5; //플레이어의 움직임 속도
 	player.score = 0; //플레이어의 점수
 	player.life = 3;
 	char player_str[50];
 
 	//Enemy
-	Enemy enemy[ENEMY_NUM];
-
+	struct Enemy enemy[ENEMY_NUM];
 	for (int i = 0; i < ENEMY_NUM; i++) {
+
+		// TODO : 굉장히 비효율적인 코드이무로 나중에 refactoring
 		enemy[i].explosion_buffer.loadFromFile("./resources/sounds/rumble.flac");
 		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
 		enemy[i].score = 100;
+		enemy[i].respawn_time = 10;
+
 		enemy[i].sprite.setSize(Vector2f(70, 70));
 		enemy[i].sprite.setPosition(rand()%300+W_WIDTH*0.9, rand()%385);
 		enemy[i].sprite.setFillColor(Color::Yellow);
@@ -138,6 +145,17 @@ int main(void) {
 
 		//enemy와 충돌
 		for (int i = 0; i < ENEMY_NUM; i++) {
+
+			//10초마다 enemy가 젠
+			if (spent_time % (1000*enemy[i].respawn_time) < 1000 / 60 + 1) {
+				enemy[i].sprite.setSize(Vector2f(70, 70));
+				enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 385);
+				enemy[i].sprite.setFillColor(Color::Yellow);
+				enemy[i].life = 1;
+				enemy[i].speed = -(rand() % 10 + 1 + spent_time%(1000*enemy[i].respawn_time));
+				window.draw(enemy[i].sprite);
+			}
+
 			if (enemy[i].life > 0) {
 
 				if (player.sprite.getGlobalBounds().intersects(enemy[i].sprite.getGlobalBounds())) 
