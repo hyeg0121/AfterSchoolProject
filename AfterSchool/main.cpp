@@ -156,17 +156,17 @@ int main(void) {
 				window.close(); //윈도우를 닫음
 				break;
 
-			//총알이 발사됨 
+			//space를 누르면 총알이 발사됨 
 			case Event::KeyPressed:
 			{
-				/*if (event.key.code == Keyboard::Space) {
+				if (event.key.code == Keyboard::Space) {
 					if (!(bullet.is_fired)) {
 						player.x = player.sprite.getPosition().x;
 						player.y = player.sprite.getPosition().y;
 						bullet.sprite.setPosition(player.x + 70, player.y + 30);
 						bullet.is_fired = 1;
 					}
-				}*/
+				}
 			}///case
 
 			}//switch
@@ -190,22 +190,15 @@ int main(void) {
 			player.sprite.move(0, player.speed);
 		}//방향키 end
 
-		//Space를 눌렀을 때 총알 발사
-		if (event.key.code == Keyboard::Space) {
-			if (!(bullet.is_fired)) {
-				player.x = player.sprite.getPosition().x;
-				player.y = player.sprite.getPosition().y;
-				bullet.sprite.setPosition(player.x + 70, player.y + 30);
-				bullet.is_fired = 1;
-			}
-		}
-
-		//총알 움직임
-		bullet.sprite.move(bullet.speed, 0);
-
 		//bullet이 화면 끝에 도달하면 다시 발사 가능
 		if (bullet.sprite.getPosition().x >= W_WIDTH) {
 			bullet.is_fired = 0;
+			bullet.sprite.setPosition(player.x + 70, player.y + 30);
+		}
+
+		//총알 움직임
+		if (bullet.is_fired) {
+			bullet.sprite.move(bullet.speed, 0);
 		}
 
 		//enemy
@@ -230,6 +223,7 @@ int main(void) {
 					enemy[i].life -= 1;
 					player.score += enemy[i].score;
 					bullet.is_fired = 0;
+					bullet.sprite.setPosition(player.x + 70, player.y + 30);
 					
 					if(enemy[i].life == 0) {
 						enemy[i].explosion_sound.play();
@@ -270,7 +264,9 @@ int main(void) {
 		text.setString(player_str);
 
 		//draw
-		window.draw(bullet.sprite);
+		if (bullet.is_fired) {
+			window.draw(bullet.sprite);
+		}
 		window.draw(player.sprite);
 		window.draw(text);
 
