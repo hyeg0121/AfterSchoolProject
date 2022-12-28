@@ -1,7 +1,7 @@
 #AfterSchool
-#¹æ°úÈÄ ¼ö¾÷
+#C í”„ë¡œì íŠ¸
 
-¸®¼Ò½º ÃâÃ³
+ë¦¬ì†ŒìŠ¤ ì¶œì²˜
 BGM : 8-bit-looping-12-bar-blues-music (CC-BY 4.0)
 https://opengameart.org/content/8-bit-looping-12-bar-blues-music
 SoundEffect : 
