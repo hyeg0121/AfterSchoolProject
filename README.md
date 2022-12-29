@@ -1,9 +1,11 @@
-#AfterSchool
-#¹æ°úÈÄ ¼ö¾÷
+# AfterSchool C í”„ë¡œì íŠ¸
 
-¸®¼Ò½º ÃâÃ³
-BGM : 8-bit-looping-12-bar-blues-music (CC-BY 4.0)
-https://opengameart.org/content/8-bit-looping-12-bar-blues-music
-SoundEffect : 
-(1) rumbleexplosion (CC-BY 3.0)
-https://opengameart.org/content/rumbleexplosion
+#### ë¦¬ì†ŒìŠ¤ ì¶œì²˜
+BGM : 8-bit-looping-12-bar-blues-music (CC-BY 4.0) <br>
+https://opengameart.org/content/8-bit-looping-12-bar-blues-music<br>
+<br>
+SoundEffect : <br>
+(1) rumbleexplosion (CC-BY 3.0) <br>
+https://opengameart.org/content/rumbleexplosion<br>
+(2) menu-selection-click (CC-BY 3.0)<br>
+https://opengameart.org/content/menu-selection-click<br>
