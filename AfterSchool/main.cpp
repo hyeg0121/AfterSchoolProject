@@ -35,6 +35,8 @@ struct Bullet {
 	int speed;
 	int is_fired;
 	int width = 70, height = 70;
+	SoundBuffer firing_buffer;
+	Sound firing_sound;
 };
 
 struct Textures {
@@ -69,8 +71,9 @@ int main(void) {
 
 	srand(time(0));
 
-	long start_time = clock(); //게임 시작 시간
-	long spent_time;//게임 진행 시간
+	long start_time = clock();		//게임 시작 시간
+	long spent_time;				//게임 진행 시간
+	long fired_time = 0;				//최근에 bullet을 발사한 시간
 	int is_gameover = 0;
 
 	//Textures
@@ -90,9 +93,11 @@ int main(void) {
 	BGM_sound.setLoop(1);
 	BGM_sound.play();
 
+	//Font
 	Font font; 
 	font.loadFromFile("C:\\windows\\Fonts\\comicbd.ttf");
 
+	//Text
 	Text text; //score
 	text.setFont(font);
 	text.setCharacterSize(30);
@@ -102,6 +107,7 @@ int main(void) {
 	text.setPosition(0, 0);
 	text.setString("score : time : life :");
 
+	//Background
 	Sprite bg_sprite;
 	bg_sprite.setTexture(t.bg);
 	bg_sprite.setPosition(0, 0);
@@ -143,12 +149,15 @@ int main(void) {
 	struct Bullet bullet[BULLET_NUM];
 	int bullet_speed = 20;
 	int bullet_idx = 0;
+	int bullet_delay = 500;
 	for (int i = 0; i < BULLET_NUM; i++) {
 		bullet[i].sprite.setSize(Vector2f(bullet[i].width, bullet[i].height));
 		bullet[i].sprite.setPosition(player.x + 90, player.y + 50); //임시 테스트
 		bullet[i].speed = 20;
 		bullet[i].is_fired = 0;
 		bullet[i].sprite.setTexture(&t.bullet);
+		bullet[i].firing_buffer.loadFromFile("./resources/sounds/bulletfiring.wav");
+		bullet[i].firing_sound.setBuffer(bullet[i].firing_buffer);
 	}
 
 	//프로그램 실행 중
@@ -156,6 +165,7 @@ int main(void) {
 	{
 		Event event;
 
+		//(x)버튼을 누르면 게임 종료
 		while (window.pollEvent(event)) {
 
 			switch (event.type) {
@@ -169,8 +179,12 @@ int main(void) {
 
 		}//while
 
+
+
 		//시간 구하기
 		spent_time = clock() - start_time;
+
+
 
 		/* player update */
 		//방향키를 눌렀을 때 플레이어 움직임
@@ -204,10 +218,12 @@ int main(void) {
 		/* bullet update */
 		//총알 발사 
 		if (Keyboard::isKeyPressed(Keyboard::Space)) {
-			// 총알이 발사되어있지 않다면
-			if (!bullet[bullet_idx].is_fired)
+			//bullet delay
+			if (spent_time - fired_time > bullet_delay) {
+				// 총알이 발사되어있지 않다면
 				if (!bullet[bullet_idx].is_fired)
 				{
+					bullet[bullet_idx].firing_sound.play();
 					bullet[bullet_idx].sprite.setPosition(player.x + 50, player.y + 15);
 					bullet[bullet_idx].is_fired = 1;
 					bullet[bullet_idx].sprite.setPosition(player.x + 50, player.y + 15);
@@ -217,7 +233,11 @@ int main(void) {
 					if (bullet_idx == 49) { //계속 발사할 수 있도록
 						bullet_idx = 0;
 					}
+
+					fired_time = spent_time; //장전 시간
 				}
+			}
+			
 		}
 
 		//bullet이 화면 끝에 도달하면 다시 발사 가능
