@@ -17,14 +17,9 @@ struct Player {
 
 struct Enemy {
 	RectangleShape sprite;
-	const int NUM = 7;
 	int life;
 	int speed;
 	int score;
-	int width = 100, height = 100;
-	Sound explosion_sound;
-	int respawn_time;
-
 };
 
 struct Bullet {
@@ -153,14 +148,15 @@ int main(void) {
 
 	/* Enmey */
 	struct Enemy enemy[ENEMY_NUM];
+	int enemy_width = 100, enemy_height = 100;
+	Sound enemy_explosion_sound;
+	int enemy_respawn_time = 5;
 	for (int i = 0; i < ENEMY_NUM; i++) {
 		// TODO : 굉장히 비효율적인 코드이무로 나중에 refactoring
-		enemy[i].explosion_sound.setBuffer(sb.explode);
-		enemy[i].score = 100;
-		enemy[i].respawn_time = 5;
+		enemy[i].sprite.setSize(Vector2f(enemy_width, enemy_height));	
+		enemy[i].score = rand() % 100 +1;
 		enemy[i].life = 1;
 		enemy[i].speed = -(rand() % 10 * 1);
-		enemy[i].sprite.setSize(Vector2f(enemy[i].width, enemy[i].height));
 		enemy[i].sprite.setPosition(rand()%300+W_WIDTH*0.9, rand()%385);
 		enemy[i].sprite.setTexture(&t.enemy);
 	}
@@ -302,11 +298,11 @@ int main(void) {
 		for (int i = 0; i < ENEMY_NUM; i++) {
 
 			//10초마다 enemy가 젠
-			if (spent_time % (1000*enemy[i].respawn_time) < 1000 / 60 + 1) {
-				enemy[i].sprite.setSize(Vector2f(enemy[i].width, enemy[i].height));
+			if (spent_time % (1000*enemy_respawn_time) < 1000 / 60 + 1) {
+				enemy[i].sprite.setSize(Vector2f(enemy_width, enemy_height));
 				enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 500);
 				enemy[i].life = 1;
-				enemy[i].speed = -(rand() % 10 + 4 + spent_time%(1000*enemy[i].respawn_time));
+				enemy[i].speed = -(rand() % 10 + 4 + spent_time%(1000*enemy_respawn_time));
 				window.draw(enemy[i].sprite);
 			}
 
@@ -323,7 +319,7 @@ int main(void) {
 						bullet[j].sprite.setPosition(player.x + 70, player.y + 30);
 					
 						if(enemy[i].life == 0) {
-							enemy[i].explosion_sound.play();
+							enemy_explosion_sound.play();
 						}
 
 					}//if
