@@ -11,7 +11,7 @@ struct Player {
 	int speed;
 	int score;
 	int life;
-	int size;
+	int width = 120, height = 120;
 	float x, y; //플레이어 좌표
 };
 
@@ -21,6 +21,7 @@ struct Enemy {
 	int life;
 	int speed;
 	int score;
+	int width = 100, height = 100;
 	SoundBuffer explosion_buffer;
 	Sound explosion_sound;
 	int respawn_time;
@@ -33,7 +34,7 @@ struct Bullet {
 	Texture * texture_pointer;
 	int speed;
 	int is_fired;
-
+	int width = 70, height = 70;
 };
 
 struct Textures {
@@ -56,8 +57,8 @@ int is_collide(RectangleShape obj1, RectangleShape obj2) {
 
 //전역변수
 const int ENEMY_NUM = 8;					//enemy의 최대 개수
-const int W_WIDTH = 1200, W_HEIGHT = 480;	//창의 크기
-const int GO_WIDTH = 640, GO_HEIGHT = 480;	//gameover 그림의 크기 
+const int W_WIDTH = 1500, W_HEIGHT = 600;	//창의 크기
+const int GO_WIDTH = 800, GO_HEIGHT = 600;	//gameover 그림의 크기 
 
 int main(void) {
 
@@ -109,9 +110,8 @@ int main(void) {
 
 	//Player
 	struct Player player;
-	player.size = 70;
-	player.sprite.setSize(Vector2f(player.size, player.size));
-	player.sprite.setPosition(100, 100);
+	player.sprite.setSize(Vector2f(player.width, player.height));
+	player.sprite.setPosition(100, W_HEIGHT/2);
 	player.x = player.sprite.getPosition().x;
 	player.y = player.sprite.getPosition().y;
 	player.sprite.setTexture(&t.player);
@@ -131,15 +131,15 @@ int main(void) {
 		enemy[i].respawn_time = 7;
 		enemy[i].life = 1;
 		enemy[i].speed = -(rand() % 10 * 1);
-		enemy[i].sprite.setSize(Vector2f(70, 70));
+		enemy[i].sprite.setSize(Vector2f(enemy[i].width, enemy[i].height));
 		enemy[i].sprite.setPosition(rand()%300+W_WIDTH*0.9, rand()%385);
 		enemy[i].sprite.setTexture(&t.enemy);
 	}
 
 	//총알
 	Bullet bullet;
-	bullet.sprite.setSize(Vector2f(30, 30));
-	bullet.sprite.setPosition(player.x + 70, player.y + 30); //임시 테스트
+	bullet.sprite.setSize(Vector2f(bullet.width, bullet.height));
+	bullet.sprite.setPosition(player.x + 90, player.y + 50); //임시 테스트
 	bullet.speed = 20;
 	bullet.is_fired = 0;
 	bullet.texture.loadFromFile("./resources/images/bullet.png");
@@ -193,12 +193,12 @@ int main(void) {
 			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Right)) {
-			if (player.sprite.getPosition().x <= W_WIDTH-player.size) {
+			if (player.sprite.getPosition().x <= W_WIDTH-player.width) {
 				player.sprite.move(player.speed, 0);
 			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Down)) {
-			if (player.sprite.getPosition().y <= W_HEIGHT-player.size) {
+			if (player.sprite.getPosition().y <= W_HEIGHT-player.height) {
 				player.sprite.move(0, player.speed);
 			}
 		}//방향키 end
@@ -219,7 +219,7 @@ int main(void) {
 
 			//10초마다 enemy가 젠
 			if (spent_time % (1000*enemy[i].respawn_time) < 1000 / 60 + 1) {
-				enemy[i].sprite.setSize(Vector2f(70, 70));
+				enemy[i].sprite.setSize(Vector2f(enemy[i].width, enemy[i].height));
 				enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 385);
 				enemy[i].life = 1;
 				enemy[i].speed = -(rand() % 10 + 1 + spent_time%(1000*enemy[i].respawn_time));
