@@ -53,6 +53,9 @@ struct Item {
 	RectangleShape sprite;
 	int delay;
 	int is_presented;
+	int speed;
+	int effect_speed;
+	int effect_delay;
 };
 
 //함수
@@ -174,14 +177,18 @@ int main(void) {
 	struct Item item[2];
 	//공격속도
 	item[0].sprite.setTexture(&t.item_delay);
-	item[0].delay = 25000;
-	item[0].is_presented = 0;
-	item[0].sprite.setSize(Vector2f(70, 70));
+	item[0].delay = 15000;
+	item[0].effect_delay = 150;
 	//이동속도
 	item[1].sprite.setTexture(&t.item_speed);
-	item[1].delay = 35000;
-	item[1].is_presented = 0;
-	item[1].sprite.setSize(Vector2f(70, 70));
+	item[1].delay = 25000;
+	item[1].effect_speed = 3;
+	//공통
+	for (int i = 0; i < 2; i++) {
+		item[i].is_presented = 0;
+		item[i].sprite.setSize(Vector2f(70, 70));
+		item[i].speed = 10;
+	}
 
 	//프로그램 실행 중
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
@@ -332,11 +339,17 @@ int main(void) {
 
 
 		/* item update */
-		if (spent_time > item[0].delay) {
-			item[0].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 500);
-		}
-		if (spent_time > item[1].delay) {
-			item[1].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 500);
+		for (int i = 0; i < 2; i++) {
+			if (spent_time % item[i].delay < 1000/60 + 1) {
+				item[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 500);
+				item[i].is_presented = 1;
+			}
+			if (item[i].is_presented) {
+				item[i].sprite.move(-item[i].speed, 0);
+				if (is_collide(item[i].sprite, player.sprite)) {
+
+				}
+			}
 		}
 		if (item[0].is_presented) {
 			// TODO : 충돌 시 아이템 효과를 주고 사라진다
@@ -344,7 +357,7 @@ int main(void) {
 		if (item[1].is_presented) {
 			//TODO : 충돌 시 아이템 효과를 주고 사라진다
 		}
-
+		printf("%d\n", spent_time);
 
 
 		/* window update */
