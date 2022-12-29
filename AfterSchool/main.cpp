@@ -17,7 +17,6 @@ struct Player {
 
 struct Bullet {
 	RectangleShape sprite;
-	Texture texture;
 	int is_fired;
 };
 
@@ -153,7 +152,7 @@ int main(void) {
 		enemy[i].score = rand() % 100 +1;
 		enemy[i].life = 1;
 		enemy[i].speed = -(rand() % 10 * 1);
-		enemy[i].sprite.setPosition(rand()%300+W_WIDTH*0.9, rand()%385);
+		enemy[i].sprite.setPosition(rand() % W_WIDTH * 0.8 + 400, rand() % W_HEIGHT * 0.8);
 		enemy[i].sprite.setTexture(&t.enemy);
 	}
 
@@ -174,6 +173,8 @@ int main(void) {
 
 	/* item */
 	struct Item item[2];
+	Sound earning_item_sound;
+	earning_item_sound.setBuffer(sb.earning_item);
 	//공격속도
 	item[0].sprite.setTexture(&t.item_delay);
 	item[0].delay = 15000;
@@ -181,7 +182,7 @@ int main(void) {
 	//이동속도
 	item[1].sprite.setTexture(&t.item_speed);
 	item[1].delay = 25000;
-	item[1].effect_speed = 3;
+	item[1].effect_speed = 1;
 	//공통
 	for (int i = 0; i < 2; i++) {
 		item[i].is_presented = 0;
@@ -295,9 +296,9 @@ int main(void) {
 			//10초마다 enemy가 젠
 			if (spent_time % (1000*enemy_respawn_time) < 1000 / 60 + 1) {
 				enemy[i].sprite.setSize(Vector2f(enemy_width, enemy_height));
-				enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 500);
+				enemy[i].sprite.setPosition(rand() % W_WIDTH * 0.8 + 400, rand() % W_HEIGHT * 0.8 );
 				enemy[i].life = 1;
-				enemy[i].speed = -(rand() % 10 + 4 + spent_time%(1000*enemy_respawn_time));
+				enemy[i].speed = -(rand() % 10 + 1 + spent_time%(1000*enemy_respawn_time));
 				window.draw(enemy[i].sprite);
 			}
 
@@ -343,18 +344,29 @@ int main(void) {
 			}
 			if (item[i].is_presented) {
 				item[i].sprite.move(-item[i].speed, 0);
-				if (is_collide(item[i].sprite, player.sprite)) {
-
+			}
+		}
+		//총알과 충돌
+		for (int i = 0; i < BULLET_NUM; i++) {
+			if (item[0].is_presented) {
+				if (is_collide(item[0].sprite, bullet[i].sprite)) {
+					if (bullet_delay > item[0].effect_delay) {
+						bullet_delay -= item[0].effect_delay;
+						earning_item_sound.play();
+						bullet[i].is_fired = 0;
+						item[0].is_presented = 0;
+					}
+				}
+			}
+			if (item[1].is_presented) {
+				if (is_collide(item[1].sprite, bullet[i].sprite)) {
+					player.speed += item[1].effect_speed;
+					earning_item_sound.play();
+					bullet[i].is_fired = 0;
+					item[0].is_presented = 0;
 				}
 			}
 		}
-		if (item[0].is_presented) {
-			// TODO : 충돌 시 아이템 효과를 주고 사라진다
-		}
-		if (item[1].is_presented) {
-			//TODO : 충돌 시 아이템 효과를 주고 사라진다
-		}
-		printf("%d\n", spent_time);
 
 
 		/* window update */
