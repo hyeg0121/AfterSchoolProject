@@ -11,6 +11,7 @@ struct Player {
 	int speed;
 	int score;
 	int life;
+	int size;
 	float x, y; //플레이어 좌표
 };
 
@@ -108,7 +109,8 @@ int main(void) {
 
 	//Player
 	struct Player player;
-	player.sprite.setSize(Vector2f(70, 70));
+	player.size = 70;
+	player.sprite.setSize(Vector2f(player.size, player.size));
 	player.sprite.setPosition(100, 100);
 	player.x = player.sprite.getPosition().x;
 	player.y = player.sprite.getPosition().y;
@@ -178,6 +180,7 @@ int main(void) {
 		//시간 구하기
 		spent_time = clock() - start_time;
 
+		/* player update */
 		//방향키를 눌렀을 때 플레이어 움직임
 		if (Keyboard::isKeyPressed(Keyboard::Left)) {
 			if (player.sprite.getPosition().x >= 0) {
@@ -190,28 +193,28 @@ int main(void) {
 			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Right)) {
-			if (player.sprite.getPosition().x <= W_WIDTH) {
+			if (player.sprite.getPosition().x <= W_WIDTH-player.size) {
 				player.sprite.move(player.speed, 0);
 			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Down)) {
-			if (player.sprite.getPosition().y <= W_HEIGHT) {
+			if (player.sprite.getPosition().y <= W_HEIGHT-player.size) {
 				player.sprite.move(0, player.speed);
 			}
 		}//방향키 end
 
+		/* bullet update */
 		//bullet이 화면 끝에 도달하면 다시 발사 가능
 		if (bullet.sprite.getPosition().x >= W_WIDTH) {
 			bullet.is_fired = 0;
 			bullet.sprite.setPosition(player.x + 70, player.y + 30);
 		}
-
 		//총알 움직임
 		if (bullet.is_fired) {
 			bullet.sprite.move(bullet.speed, 0);
 		}
 
-		//enemy
+		/* enemy update*/
 		for (int i = 0; i < ENEMY_NUM; i++) {
 
 			//10초마다 enemy가 젠
@@ -268,12 +271,12 @@ int main(void) {
 			is_gameover = 1;
 		}
 
-
+		/* score */
 		sprintf_s(player_str, "score : %d  time : %d  life : %d\n",
 			player.score, spent_time/1000,player.life);
 		text.setString(player_str);
 
-		//draw
+		/* draw */
 		if (bullet.is_fired) {
 			window.draw(bullet.sprite);
 		}
