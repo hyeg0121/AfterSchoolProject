@@ -39,6 +39,7 @@ struct Bullet {
 
 struct Textures {
 	Texture bg;			//배경 이미지
+	Texture bullet;
 	Texture enemy;		//enemy 이미지
 	Texture gameover;	//게임 종료 이미지
 	Texture player;		//player 이미지
@@ -57,6 +58,7 @@ int is_collide(RectangleShape obj1, RectangleShape obj2) {
 
 //전역변수
 const int ENEMY_NUM = 8;					//enemy의 최대 개수
+const int BULLET_NUM = 50;
 const int W_WIDTH = 1500, W_HEIGHT = 600;	//창의 크기
 const int GO_WIDTH = 800, GO_HEIGHT = 600;	//gameover 그림의 크기 
 
@@ -77,6 +79,7 @@ int main(void) {
 	t.gameover.loadFromFile("./resources/images/gameover.png");
 	t.player.loadFromFile("./resources/images/player.png");
 	t.enemy.loadFromFile("./resources/images/enemy.png");
+	t.bullet.loadFromFile("./resources/images/bullet.png");
 
 
 	//BGM
@@ -137,14 +140,16 @@ int main(void) {
 	}
 
 	//총알
-	Bullet bullet;
-	bullet.sprite.setSize(Vector2f(bullet.width, bullet.height));
-	bullet.sprite.setPosition(player.x + 90, player.y + 50); //임시 테스트
-	bullet.speed = 20;
-	bullet.is_fired = 0;
-	bullet.texture.loadFromFile("./resources/images/bullet.png");
-	bullet.texture_pointer = &bullet.texture;
-	bullet.sprite.setTexture(bullet.texture_pointer);
+	struct Bullet bullet[BULLET_NUM];
+	int bullet_speed = 20;
+	int bullet_idx = 0;
+	for (int i = 0; i < BULLET_NUM; i++) {
+		bullet[i].sprite.setSize(Vector2f(bullet[i].width, bullet[i].height));
+		bullet[i].sprite.setPosition(player.x + 90, player.y + 50); //임시 테스트
+		bullet[i].speed = 20;
+		bullet[i].is_fired = 0;
+		bullet[i].sprite.setTexture(&t.bullet);
+	}
 
 	//프로그램 실행 중
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
@@ -159,19 +164,6 @@ int main(void) {
 			case Event::Closed:
 				window.close(); //윈도우를 닫음
 				break;
-
-			//space를 누르면 총알이 발사됨 
-			case Event::KeyPressed:
-			{
-				if (event.key.code == Keyboard::Space) {
-					if (!(bullet.is_fired)) {
-						player.x = player.sprite.getPosition().x;
-						player.y = player.sprite.getPosition().y;
-						bullet.sprite.setPosition(player.x + 70, player.y + 30);
-						bullet.is_fired = 1;
-					}
-				}
-			}///case
 
 			}//switch
 
@@ -203,16 +195,46 @@ int main(void) {
 			}
 		}//방향키 end
 
+		//플레이어 위치 구하기
+		player.x = player.sprite.getPosition().x;
+		player.y = player.sprite.getPosition().y;
+
+
+
 		/* bullet update */
+		//총알 발사 
+		if (Keyboard::isKeyPressed(Keyboard::Space)) {
+			// 총알이 발사되어있지 않다면
+			if (!bullet[bullet_idx].is_fired)
+				if (!bullet[bullet_idx].is_fired)
+				{
+					bullet[bullet_idx].sprite.setPosition(player.x + 50, player.y + 15);
+					bullet[bullet_idx].is_fired = 1;
+					bullet[bullet_idx].sprite.setPosition(player.x + 50, player.y + 15);
+					bullet[bullet_idx].is_fired = 1;
+					bullet_idx++;	// 다음총알이 발사할 수 있도록
+
+					if (bullet_idx == 49) { //계속 발사할 수 있도록
+						bullet_idx = 0;
+					}
+				}
+		}
+
 		//bullet이 화면 끝에 도달하면 다시 발사 가능
-		if (bullet.sprite.getPosition().x >= W_WIDTH) {
-			bullet.is_fired = 0;
-			bullet.sprite.setPosition(player.x + 70, player.y + 30);
+		for (int i = 0; i < BULLET_NUM; i++) {
+			if (bullet[i].sprite.getPosition().x >= W_WIDTH) {
+				bullet[i].is_fired = 0;
+				bullet[i].sprite.setPosition(player.x + 70, player.y + 30);
+			}
+			//총알 움직임
+			if (bullet[i].is_fired) {
+				bullet[i].sprite.move(bullet[i].speed, 0);
+			}
 		}
-		//총알 움직임
-		if (bullet.is_fired) {
-			bullet.sprite.move(bullet.speed, 0);
-		}
+
+
+
+
 
 		/* enemy update*/
 		for (int i = 0; i < ENEMY_NUM; i++) {
@@ -226,36 +248,41 @@ int main(void) {
 				window.draw(enemy[i].sprite);
 			}
 
-			//bullet과 enemy, player와 enemy가 충돌
-			if (enemy[i].life > 0) {
-				// TODO : 총알이 관통하는 버그 수정
-				if (is_collide(player.sprite, enemy[i].sprite)
-					|| is_collide(bullet.sprite, enemy[i].sprite))
-				{
-					printf("enemy[%d]와 충돌\n", i);
-					enemy[i].life -= 1;
-					player.score += enemy[i].score;
-					bullet.is_fired = 0;
-					bullet.sprite.setPosition(player.x + 70, player.y + 30);
+			for (int j = 0; j < BULLET_NUM; j++) {
+				//bullet과 enemy, player와 enemy가 충돌
+				if (enemy[i].life > 0) {
+					// TODO : 총알이 관통하는 버그 수정
+					if (is_collide(bullet[j].sprite, enemy[i].sprite))
+					{
+						printf("enemy[%d]와 충돌\n", i);
+						enemy[i].life -= 1;
+						player.score += enemy[i].score;
+						bullet[j].is_fired = 0;
+						bullet[j].sprite.setPosition(player.x + 70, player.y + 30);
 					
-					if(enemy[i].life == 0) {
-						enemy[i].explosion_sound.play();
-					}
+						if(enemy[i].life == 0) {
+							enemy[i].explosion_sound.play();
+						}
+
+					}//if
+					//적이 왼쪽 끝에 진입하려는 순간
+					else if (enemy[i].sprite.getPosition().x < 0) 
+					{ 
+						player.life -= 1;
+						enemy[i].life = 0;
+					}//else if
+
 
 				}//if
-				//적이 왼쪽 끝에 진입하려는 순간
-				else if (enemy[i].sprite.getPosition().x < 0) 
-				{ 
-					player.life -= 1;
-					enemy[i].life = 0;
-				}//else if
-
-			}//if
+			}//for j
 
 			//적 움직임
 			enemy[i].sprite.move(enemy[i].speed, 0);		
-		}
+		}//for i
 
+
+
+		/* window update */
 		window.clear(Color::Black);
 		window.draw(bg_sprite);
 
@@ -271,14 +298,17 @@ int main(void) {
 			is_gameover = 1;
 		}
 
+
 		/* score */
 		sprintf_s(player_str, "score : %d  time : %d  life : %d\n",
 			player.score, spent_time/1000,player.life);
 		text.setString(player_str);
 
 		/* draw */
-		if (bullet.is_fired) {
-			window.draw(bullet.sprite);
+		for (int i = 0; i < BULLET_NUM; i++) {
+			if (bullet[i].is_fired) {
+				window.draw(bullet[i].sprite);
+			}
 		}
 		window.draw(player.sprite);
 		window.draw(text);
