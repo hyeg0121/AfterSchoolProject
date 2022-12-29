@@ -134,7 +134,7 @@ int main(void) {
 	for (int i = 0; i < ENEMY_NUM; i++) {
 
 		// TODO : 굉장히 비효율적인 코드이무로 나중에 refactoring
-		enemy[i].explosion_buffer.loadFromFile("./resources/sounds/rumble.flac");
+		enemy[i].explosion_buffer.loadFromFile("./resources/sounds/explode.ogg");
 		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
 		enemy[i].score = 100;
 		enemy[i].respawn_time = 7;
@@ -212,6 +212,8 @@ int main(void) {
 				player.sprite.move(0, player.speed);
 			}
 		}//방향키 end
+
+
 
 		//플레이어 위치 구하기
 		player.x = player.sprite.getPosition().x;
