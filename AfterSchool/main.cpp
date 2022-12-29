@@ -22,7 +22,6 @@ struct Enemy {
 	int speed;
 	int score;
 	int width = 100, height = 100;
-	SoundBuffer explosion_buffer;
 	Sound explosion_sound;
 	int respawn_time;
 
@@ -35,7 +34,6 @@ struct Bullet {
 	int speed;
 	int is_fired;
 	int width = 70, height = 30;
-	SoundBuffer firing_buffer;
 	Sound firing_sound;
 };
 
@@ -56,6 +54,13 @@ struct Item {
 	int speed;
 	int effect_speed;
 	int effect_delay;
+};
+
+struct SBuffer {
+	SoundBuffer BGM;
+	SoundBuffer explode;
+	SoundBuffer earning_item;
+	SoundBuffer bulletfiring;
 };
 
 //함수
@@ -97,12 +102,16 @@ int main(void) {
 	t.item_delay.loadFromFile("./resources/images/delay.png");
 	t.item_speed.loadFromFile("./resources/images/speed.png");
 
+	/* SBuffer */
+	struct SBuffer sb;
+	sb.BGM.loadFromFile("./resources/sounds/bgm.ogg");
+	sb.bulletfiring.loadFromFile("./resources/sounds/bulletfiring.wav");
+	sb.earning_item.loadFromFile("./resources/sounds/earning_item.ogg");
+	sb.explode.loadFromFile("./resources/sounds/explode.ogg");
 
 	//BGM
-	SoundBuffer BGM_buffer;
-	BGM_buffer.loadFromFile("./resources/sounds/bgm.ogg");
 	Sound BGM_sound;
-	BGM_sound.setBuffer(BGM_buffer);
+	BGM_sound.setBuffer(sb.BGM);
 	BGM_sound.setLoop(1);
 	BGM_sound.play();
 
@@ -145,10 +154,8 @@ int main(void) {
 	/* Enmey */
 	struct Enemy enemy[ENEMY_NUM];
 	for (int i = 0; i < ENEMY_NUM; i++) {
-
 		// TODO : 굉장히 비효율적인 코드이무로 나중에 refactoring
-		enemy[i].explosion_buffer.loadFromFile("./resources/sounds/explode.ogg");
-		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
+		enemy[i].explosion_sound.setBuffer(sb.explode);
 		enemy[i].score = 100;
 		enemy[i].respawn_time = 5;
 		enemy[i].life = 1;
@@ -169,8 +176,7 @@ int main(void) {
 		bullet[i].speed = 20;
 		bullet[i].is_fired = 0;
 		bullet[i].sprite.setTexture(&t.bullet);
-		bullet[i].firing_buffer.loadFromFile("./resources/sounds/bulletfiring.wav");
-		bullet[i].firing_sound.setBuffer(bullet[i].firing_buffer);
+		bullet[i].firing_sound.setBuffer(sb.bulletfiring);
 	}
 
 	/* item */
