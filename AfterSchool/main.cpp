@@ -15,21 +15,17 @@ struct Player {
 	float x, y; //플레이어 좌표
 };
 
+struct Bullet {
+	RectangleShape sprite;
+	Texture texture;
+	int is_fired;
+};
+
 struct Enemy {
 	RectangleShape sprite;
 	int life;
 	int speed;
 	int score;
-};
-
-struct Bullet {
-	RectangleShape sprite;
-	Texture texture;
-	Texture * texture_pointer;
-	int speed;
-	int is_fired;
-	int width = 70, height = 30;
-	Sound firing_sound;
 };
 
 struct Textures {
@@ -166,13 +162,14 @@ int main(void) {
 	int bullet_speed = 20;
 	int bullet_idx = 0;
 	int bullet_delay = 500;
+	int bullet_width = 70, bullet_height = 30;
+	Sound bullet_firing_sound;
+	bullet_firing_sound.setBuffer(sb.bulletfiring);
 	for (int i = 0; i < BULLET_NUM; i++) {
-		bullet[i].sprite.setSize(Vector2f(bullet[i].width, bullet[i].height));
+		bullet[i].sprite.setSize(Vector2f(bullet_width, bullet_height));
 		bullet[i].sprite.setPosition(player.x + 90, player.y + 50); //임시 테스트
-		bullet[i].speed = 20;
 		bullet[i].is_fired = 0;
 		bullet[i].sprite.setTexture(&t.bullet);
-		bullet[i].firing_sound.setBuffer(sb.bulletfiring);
 	}
 
 	/* item */
@@ -261,7 +258,7 @@ int main(void) {
 				// 총알이 발사되어있지 않다면
 				if (!bullet[bullet_idx].is_fired)
 				{
-					bullet[bullet_idx].firing_sound.play();
+					bullet_firing_sound.play();
 					bullet[bullet_idx].sprite.setPosition(player.x + 50, player.y + 15);
 					bullet[bullet_idx].is_fired = 1;
 					bullet[bullet_idx].sprite.setPosition(player.x + 50, player.y + 15);
@@ -286,11 +283,9 @@ int main(void) {
 			}
 			//총알 움직임
 			if (bullet[i].is_fired) {
-				bullet[i].sprite.move(bullet[i].speed, 0);
+				bullet[i].sprite.move(bullet_speed, 0);
 			}
 		}
-
-
 
 
 
