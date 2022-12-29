@@ -11,7 +11,7 @@ struct Player {
 	int speed;
 	int score;
 	int life;
-	int width = 120, height = 120;
+	int width = 100, height = 100;
 	float x, y; //플레이어 좌표
 };
 
@@ -34,7 +34,7 @@ struct Bullet {
 	Texture * texture_pointer;
 	int speed;
 	int is_fired;
-	int width = 70, height = 70;
+	int width = 70, height = 30;
 	SoundBuffer firing_buffer;
 	Sound firing_sound;
 };
@@ -149,7 +149,7 @@ int main(void) {
 	struct Bullet bullet[BULLET_NUM];
 	int bullet_speed = 20;
 	int bullet_idx = 0;
-	int bullet_delay = 500;
+	int bullet_delay = 250;
 	for (int i = 0; i < BULLET_NUM; i++) {
 		bullet[i].sprite.setSize(Vector2f(bullet[i].width, bullet[i].height));
 		bullet[i].sprite.setPosition(player.x + 90, player.y + 50); //임시 테스트
@@ -188,22 +188,26 @@ int main(void) {
 
 		/* player update */
 		//방향키를 눌렀을 때 플레이어 움직임
-		if (Keyboard::isKeyPressed(Keyboard::Left)) {
+		if (Keyboard::isKeyPressed(Keyboard::Left) ||
+			Keyboard::isKeyPressed(Keyboard::A)) {
 			if (player.sprite.getPosition().x >= 0) {
 				 player.sprite.move(-player.speed, 0);
 			}
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Up)) {
+		if (Keyboard::isKeyPressed(Keyboard::Up) ||
+			Keyboard::isKeyPressed(Keyboard::W)) {
 			if (player.sprite.getPosition().y >= 0) {
 				player.sprite.move(0, -player.speed);
 			}
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Right)) {
+		if (Keyboard::isKeyPressed(Keyboard::Right) ||
+			Keyboard::isKeyPressed(Keyboard::D)) {
 			if (player.sprite.getPosition().x <= W_WIDTH-player.width) {
 				player.sprite.move(player.speed, 0);
 			}
 		}
-		if (Keyboard::isKeyPressed(Keyboard::Down)) {
+		if (Keyboard::isKeyPressed(Keyboard::Down) ||
+			Keyboard::isKeyPressed(Keyboard::S)) {
 			if (player.sprite.getPosition().y <= W_HEIGHT-player.height) {
 				player.sprite.move(0, player.speed);
 			}
@@ -262,9 +266,9 @@ int main(void) {
 			//10초마다 enemy가 젠
 			if (spent_time % (1000*enemy[i].respawn_time) < 1000 / 60 + 1) {
 				enemy[i].sprite.setSize(Vector2f(enemy[i].width, enemy[i].height));
-				enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 385);
+				enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 500);
 				enemy[i].life = 1;
-				enemy[i].speed = -(rand() % 10 + 1 + spent_time%(1000*enemy[i].respawn_time));
+				enemy[i].speed = -(rand() % 10 + 4 + spent_time%(1000*enemy[i].respawn_time));
 				window.draw(enemy[i].sprite);
 			}
 
