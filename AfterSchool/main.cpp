@@ -8,8 +8,6 @@ using namespace sf;
 
 struct Player {
 	RectangleShape sprite; //그림이 되는 부분
-	Texture texture;
-	Texture* texture_pointer;
 	int speed;
 	int score;
 	int life;
@@ -18,8 +16,6 @@ struct Player {
 
 struct Enemy {
 	RectangleShape sprite;
-	Texture texture[7];
-	Texture* texture_pointer;
 	const int NUM = 7;
 	int life;
 	int speed;
@@ -41,10 +37,9 @@ struct Bullet {
 
 struct Textures {
 	Texture bg;			//배경 이미지
+	Texture enemy;		//enemy 이미지
 	Texture gameover;	//게임 종료 이미지
 	Texture player;		//player 이미지
-	Texture* player_pointer;
-	Texture enemy;		//enemy 이미지
 };
 
 //함수
@@ -59,7 +54,7 @@ int is_collide(RectangleShape obj1, RectangleShape obj2) {
 };
 
 //전역변수
-const int ENEMY_NUM = 10;					//enemy의 최대 개수
+const int ENEMY_NUM = 8;					//enemy의 최대 개수
 const int W_WIDTH = 1200, W_HEIGHT = 480;	//창의 크기
 const int GO_WIDTH = 640, GO_HEIGHT = 480;	//gameover 그림의 크기 
 
@@ -120,22 +115,20 @@ int main(void) {
 	player.sprite.setTexture(&t.player);
 	player.speed = 8; //플레이어의 움직임 속도
 	player.score = 0; //플레이어의 점수
-	player.life = 3;
+	player.life = 10;
 	char player_str[50];
 
 	//Enemy
 	struct Enemy enemy[ENEMY_NUM];
-	char filename[100];
 	for (int i = 0; i < ENEMY_NUM; i++) {
 
 		// TODO : 굉장히 비효율적인 코드이무로 나중에 refactoring
 		enemy[i].explosion_buffer.loadFromFile("./resources/sounds/rumble.flac");
 		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
 		enemy[i].score = 100;
-		enemy[i].respawn_time = 10;
+		enemy[i].respawn_time = 7;
 		enemy[i].life = 1;
 		enemy[i].speed = -(rand() % 10 * 1);
-
 		enemy[i].sprite.setSize(Vector2f(70, 70));
 		enemy[i].sprite.setPosition(rand()%300+W_WIDTH*0.9, rand()%385);
 		enemy[i].sprite.setTexture(&t.enemy);
@@ -187,16 +180,24 @@ int main(void) {
 
 		//방향키를 눌렀을 때 플레이어 움직임
 		if (Keyboard::isKeyPressed(Keyboard::Left)) {
-			player.sprite.move(-player.speed, 0);
+			if (player.sprite.getPosition().x >= 0) {
+				 player.sprite.move(-player.speed, 0);
+			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Up)) {
-			player.sprite.move(0, -player.speed);
+			if (player.sprite.getPosition().y >= 0) {
+				player.sprite.move(0, -player.speed);
+			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Right)) {
-			player.sprite.move(player.speed, 0);
+			if (player.sprite.getPosition().x <= W_WIDTH) {
+				player.sprite.move(player.speed, 0);
+			}
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Down)) {
-			player.sprite.move(0, player.speed);
+			if (player.sprite.getPosition().y <= W_HEIGHT) {
+				player.sprite.move(0, player.speed);
+			}
 		}//방향키 end
 
 		//bullet이 화면 끝에 도달하면 다시 발사 가능
