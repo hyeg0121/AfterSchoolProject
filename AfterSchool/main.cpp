@@ -44,7 +44,15 @@ struct Textures {
 	Texture bullet;
 	Texture enemy;		//enemy 이미지
 	Texture gameover;	//게임 종료 이미지
+	Texture item_delay;
+	Texture item_speed;
 	Texture player;		//player 이미지
+};
+
+struct Item {
+	RectangleShape sprite;
+	int delay;
+	int is_presented;
 };
 
 //함수
@@ -59,7 +67,7 @@ int is_collide(RectangleShape obj1, RectangleShape obj2) {
 };
 
 //전역변수
-const int ENEMY_NUM = 8;					//enemy의 최대 개수
+const int ENEMY_NUM = 10;					//enemy의 최대 개수
 const int BULLET_NUM = 50;
 const int W_WIDTH = 1500, W_HEIGHT = 600;	//창의 크기
 const int GO_WIDTH = 800, GO_HEIGHT = 600;	//gameover 그림의 크기 
@@ -83,6 +91,8 @@ int main(void) {
 	t.player.loadFromFile("./resources/images/player.png");
 	t.enemy.loadFromFile("./resources/images/enemy.png");
 	t.bullet.loadFromFile("./resources/images/bullet.png");
+	t.item_delay.loadFromFile("./resources/images/delay.png");
+	t.item_speed.loadFromFile("./resources/images/speed.png");
 
 
 	//BGM
@@ -117,7 +127,7 @@ int main(void) {
 	gameover_sprite.setTexture(t.gameover);
 	gameover_sprite.setPosition((W_WIDTH-GO_WIDTH)/2, (W_HEIGHT-GO_HEIGHT)/2);
 
-	//Player
+	/* Player */
 	struct Player player;
 	player.sprite.setSize(Vector2f(player.width, player.height));
 	player.sprite.setPosition(100, W_HEIGHT/2);
@@ -129,7 +139,7 @@ int main(void) {
 	player.life = 10;
 	char player_str[50];
 
-	//Enemy
+	/* Enmey */
 	struct Enemy enemy[ENEMY_NUM];
 	for (int i = 0; i < ENEMY_NUM; i++) {
 
@@ -137,7 +147,7 @@ int main(void) {
 		enemy[i].explosion_buffer.loadFromFile("./resources/sounds/explode.ogg");
 		enemy[i].explosion_sound.setBuffer(enemy[i].explosion_buffer);
 		enemy[i].score = 100;
-		enemy[i].respawn_time = 7;
+		enemy[i].respawn_time = 5;
 		enemy[i].life = 1;
 		enemy[i].speed = -(rand() % 10 * 1);
 		enemy[i].sprite.setSize(Vector2f(enemy[i].width, enemy[i].height));
@@ -145,11 +155,11 @@ int main(void) {
 		enemy[i].sprite.setTexture(&t.enemy);
 	}
 
-	//총알
+	/* Bullet */
 	struct Bullet bullet[BULLET_NUM];
 	int bullet_speed = 20;
 	int bullet_idx = 0;
-	int bullet_delay = 250;
+	int bullet_delay = 500;
 	for (int i = 0; i < BULLET_NUM; i++) {
 		bullet[i].sprite.setSize(Vector2f(bullet[i].width, bullet[i].height));
 		bullet[i].sprite.setPosition(player.x + 90, player.y + 50); //임시 테스트
@@ -159,6 +169,19 @@ int main(void) {
 		bullet[i].firing_buffer.loadFromFile("./resources/sounds/bulletfiring.wav");
 		bullet[i].firing_sound.setBuffer(bullet[i].firing_buffer);
 	}
+
+	/* item */
+	struct Item item[2];
+	//공격속도
+	item[0].sprite.setTexture(&t.item_delay);
+	item[0].delay = 25000;
+	item[0].is_presented = 0;
+	item[0].sprite.setSize(Vector2f(70, 70));
+	//이동속도
+	item[1].sprite.setTexture(&t.item_speed);
+	item[1].delay = 35000;
+	item[1].is_presented = 0;
+	item[1].sprite.setSize(Vector2f(70, 70));
 
 	//프로그램 실행 중
 	while (window.isOpen())//윈도우가 열려 있을 때 까지 창 유지 
@@ -308,6 +331,22 @@ int main(void) {
 
 
 
+		/* item update */
+		if (spent_time > item[0].delay) {
+			item[0].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 500);
+		}
+		if (spent_time > item[1].delay) {
+			item[1].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 500);
+		}
+		if (item[0].is_presented) {
+			// TODO : 충돌 시 아이템 효과를 주고 사라진다
+		}
+		if (item[1].is_presented) {
+			//TODO : 충돌 시 아이템 효과를 주고 사라진다
+		}
+
+
+
 		/* window update */
 		window.clear(Color::Black);
 		window.draw(bg_sprite);
@@ -319,11 +358,15 @@ int main(void) {
 			}
 		}
 
+		for (int i = 0; i < 2; i++) {
+			if (item[i].is_presented) {
+				window.draw(item[i].sprite);
+			}
+		}
 		if (player.life <= 0)
 		{
 			is_gameover = 1;
 		}
-
 
 		/* score */
 		sprintf_s(player_str, "score : %d  time : %d  life : %d\n",
