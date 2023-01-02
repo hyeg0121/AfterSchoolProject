@@ -71,7 +71,7 @@ int is_collide(RectangleShape obj1, RectangleShape obj2) {
 };
 
 //전역변수
-const int ENEMY_NUM = 10;					//enemy의 최대 개수
+const int ENEMY_NUM = 7;					//enemy의 최대 개수
 const int BULLET_NUM = 50;
 const int ITEM_NUM = 2;
 const int W_WIDTH = 1500, W_HEIGHT = 600;	//창의 크기
@@ -155,7 +155,7 @@ int main(void) {
 	int bullet_idx = 0;
 	int bullet_delay = 500;
 	int bullet_delay_max = 100;
-	int bullet_width = 70, bullet_height = 30;
+	int bullet_width = 30, bullet_height = 30;
 	Sound bullet_firing_sound;
 	bullet_firing_sound.setBuffer(sb.bulletfiring);
 
@@ -177,7 +177,7 @@ int main(void) {
 		enemy[i].sprite.setSize(Vector2f(enemy_width, enemy_height));	
 		enemy[i].score = rand() % 100 +1;
 		enemy[i].life = 1;
-		enemy[i].speed = -(rand() % 10 * 1);
+		enemy[i].speed = -(rand() % 7 + 1);
 		enemy[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.8, rand() % W_HEIGHT * 0.8);
 		enemy[i].sprite.setTexture(&t.enemy);
 	}
@@ -343,11 +343,13 @@ int main(void) {
 		/* item update */
 		for (int i = 0; i < 2; i++) 
 		{
-			//일정 시간이 지난 후 item 등장
-			if (spent_time % item[i].presented_time > item[i].delay)
-			{
-				item[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 500);
-				item[i].is_presented = 1;
+			if (!(item[i].is_presented)) {
+				//일정 시간이 지난 후 item 등장
+				if (spent_time % item[i].presented_time > item[i].delay)
+				{
+					item[i].sprite.setPosition(rand() % 300 + W_WIDTH * 0.9, rand() % 500);
+					item[i].is_presented = 1;
+				}
 			}
 			if (item[i].is_presented) 
 			{
