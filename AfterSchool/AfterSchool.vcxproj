@@ -24,6 +24,7 @@
     <ProjectGuid>{50833dd0-f869-4ca2-8fbf-d4f5c70bff82}</ProjectGuid>
     <RootNamespace>AfterSchool</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>be_a_trafic_police</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

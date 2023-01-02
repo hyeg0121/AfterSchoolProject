@@ -24,6 +24,7 @@
     <ProjectGuid>{f653f353-9731-443c-86e5-ec71b512c5ff}</ProjectGuid>
     <RootNamespace>Grammer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>grammer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
